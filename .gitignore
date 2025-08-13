@@ -1,4 +1,60 @@
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+env/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cloud Run & Docker
+.dockerignore
 
 # Google Cloud SDK - development tools, should not be committed
 google-cloud-sdk/
 google-cloud-cli-*.tar.gz
+
+# Test files (for production)
+test_*.py
+*_test.py
+tests/
+
+# Node.js (for frontend)
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

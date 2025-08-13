@@ -9,7 +9,7 @@ A FastAPI-powered voice-enabled PSLE Oral Examination API powered by SEA-LION AI
 - **SEA-LION AI Integration**: Powered by Southeast Asia's advanced language model
 - **CORS Support**: Ready for frontend integration with Next.js
 - **FastAPI**: Modern, fast Python web framework with automatic API docs
-- **Docker Support**: Containerized deployment ready
+- **Cloud Run Ready**: Optimized for Google Cloud Run deployment
 - **Environment Configuration**: Secure API key management
 
 ## 🚀 Quick Start
@@ -67,13 +67,7 @@ ENVIRONMENT=development
 LOG_LEVEL=INFO
 ```
 
-### 4. Test API Keys (Optional but Recommended)
-
-```bash
-python test_api_keys.py
-```
-
-### 5. Run the Application
+### 4. Run the Application
 
 ```bash
 # Development server (auto-reload enabled)
@@ -118,9 +112,7 @@ python main.py
 backend/
 ├── main.py                 # FastAPI application entry point
 ├── requirements.txt        # Python dependencies
-├── Dockerfile             # Docker container configuration
 ├── env_example.txt        # Environment variables template
-├── test_api_keys.py       # API key validation script
 ├── .env                   # Your environment variables (create this)
 │
 ├── models/                # Data models and schemas
@@ -162,15 +154,9 @@ curl -X POST "http://localhost:8000/api/voice/speech-to-text" \
      }'
 ```
 
-## 🐳 Docker Deployment
+## ☁️ Cloud Run Deployment
 
-```bash
-# Build the Docker image
-docker build -t speaksea-backend .
-
-# Run the container
-docker run -p 8000:8000 --env-file .env speaksea-backend
-```
+The backend is optimized for Google Cloud Run deployment. After testing locally, you can create a clean Dockerfile and deploy to GCP Cloud Run.
 
 ## 🛠️ Development
 
@@ -208,13 +194,18 @@ source venv/bin/activate
 
 **🔧 API key errors:**
 ```bash
-# Run the test script to validate your keys
-python test_api_keys.py
+# Check your .env file and ensure API keys are correctly set
+cat .env  # Verify your environment variables
 ```
 
 ## 🔗 Integration with Frontend
 
-The API is configured to work with the Next.js frontend at `http://localhost:3000`. CORS is already configured for local development.
+The API is configured to work with the Next.js frontend. CORS supports both local development (`http://localhost:3000`) and production origins via the `ALLOWED_ORIGINS` environment variable.
+
+For production deployment, set the `ALLOWED_ORIGINS` environment variable:
+```bash
+ALLOWED_ORIGINS=https://your-frontend-domain.com,https://another-domain.com
+```
 
 ## 📄 License
 
