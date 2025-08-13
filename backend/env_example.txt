@@ -1,0 +1,10 @@
+# OpenAI API Key (for Whisper STT and TTS)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# SEA-LION API Configuration
+SEALION_API_KEY=your_sealion_api_key_here
+SEALION_BASE_URL=https://api.sea-lion.ai/v1
+
+# Application Configuration
+ENVIRONMENT=development
+LOG_LEVEL=INFO
