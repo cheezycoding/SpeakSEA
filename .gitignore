@@ -1,0 +1,4 @@
+
+# Google Cloud SDK - development tools, should not be committed
+google-cloud-sdk/
+google-cloud-cli-*.tar.gz
