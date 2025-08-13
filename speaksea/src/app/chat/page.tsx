@@ -80,7 +80,7 @@ export default function ChatPage() {
       }))
 
       // Call the full conversation pipeline
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/chat/conversation`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://speaksea-backend-419410473094.asia-southeast1.run.app'}/api/chat/conversation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
