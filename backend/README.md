@@ -1,119 +1,121 @@
-# SpeakSEA Backend API 🎤🦁
+# 🚀 SpeakSEA Backend API
 
-A FastAPI-powered voice-enabled PSLE Oral Examination API powered by SEA-LION AI, providing speech-to-text and text-to-speech capabilities for educational applications.
+A FastAPI-powered backend for voice-enabled PSLE Oral Examination practice, featuring speech-to-text transcription and AI-powered conversation with SEA-LION.
 
-## ✨ Features
+## 🌍 **Production Deployment**
 
-- **Speech-to-Text**: Convert audio recordings to text using OpenAI Whisper
-- **Text-to-Speech**: Generate natural-sounding speech from text using OpenAI TTS
-- **SEA-LION AI Integration**: Powered by Southeast Asia's advanced language model
-- **CORS Support**: Ready for frontend integration with Next.js
-- **FastAPI**: Modern, fast Python web framework with automatic API docs
-- **Cloud Run Ready**: Optimized for Google Cloud Run deployment
-- **Environment Configuration**: Secure API key management
+**Live API**: https://speaksea-backend-419410473094.asia-southeast1.run.app
 
-## 🚀 Quick Start
+- **Platform**: Google Cloud Run
+- **Region**: Asia Southeast 1 (Singapore) 
+- **Status**: ✅ **LIVE & HEALTHY**
+- **Health Check**: https://speaksea-backend-419410473094.asia-southeast1.run.app/health
+- **API Documentation**: https://speaksea-backend-419410473094.asia-southeast1.run.app/docs
 
-### Prerequisites
+---
 
-- **Python 3.9+** (Check with: `python --version`)
-- **pip** (Python package manager)
-- **OpenAI API Key** ([Get one here](https://platform.openai.com/api-keys))
-- **SEA-LION API Key** ([Get one here](https://api.sea-lion.ai))
+## 🏗️ **Architecture**
 
-### 1. Clone and Setup
+### **Core Components**
+- **FastAPI**: Modern web framework with automatic OpenAPI documentation
+- **OpenAI Whisper**: Speech-to-text transcription
+- **SEA-LION AI**: Conversational AI for educational feedback
+- **Pydantic**: Data validation and serialization
+- **Docker**: Containerized deployment
 
-```bash
-# If you just cloned the repository, navigate to backend
-cd SpeakSEA/backend
-
-# Create virtual environment (recommended)
-python -m venv venv
-
-# Activate virtual environment
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-# venv\Scripts\activate
+### **API Endpoints**
+```
+GET  /                           # API status and info
+GET  /health                     # Health check endpoint
+POST /api/chat/conversation      # Main conversation pipeline
+POST /api/voice/transcribe       # Speech transcription only
 ```
 
-### 2. Install Dependencies
+---
 
+## 🛠️ **Local Development Setup**
+
+### **Prerequisites**
+- Python 3.12+ (Note: Python 3.13 not supported due to Pydantic compatibility)
+- API Keys: OpenAI, SEA-LION
+
+### **Installation**
 ```bash
+# 1. Clone and navigate
+cd backend/
+
+# 2. Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 3. Install dependencies
 pip install -r requirements.txt
-```
 
-### 3. Environment Configuration
-
-```bash
-# Copy the environment template
+# 4. Set up environment variables
 cp env_example.txt .env
-
-# Edit .env file with your API keys
-nano .env  # or use your preferred editor
+# Edit .env with your actual API keys
 ```
 
-**Required Environment Variables:**
-```env
-# OpenAI API Key (for Whisper STT and TTS)
-OPENAI_API_KEY=your_openai_api_key_here
-
-# SEA-LION API Configuration
-SEALION_API_KEY=your_sealion_api_key_here
-SEALION_BASE_URL=https://api.sea-lion.ai/v1
-
-# Application Configuration
-ENVIRONMENT=development
-LOG_LEVEL=INFO
-```
-
-### 4. Run the Application
-
+### **Environment Variables** (.env)
 ```bash
-# Development server (auto-reload enabled)
+# Required API Keys
+OPENAI_API_KEY=your_openai_api_key_here
+SEALION_API_KEY=your_sealion_api_key_here  
+SEALION_BASE_URL=https://api.aisingapore.org/v1
+
+# Optional: Production CORS origins
+ALLOWED_ORIGINS=https://your-frontend-domain.com
+```
+
+### **Run Locally**
+```bash
+# Development server
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
-# Production server
+# Production-like server
 python main.py
 ```
 
-🎉 **Your API is now running at:** `http://localhost:8000`
+**Local API**: http://localhost:8000
+**Local Docs**: http://localhost:8000/docs
 
-- **API Documentation**: `http://localhost:8000/docs`
-- **Alternative Docs**: `http://localhost:8000/redoc`
-- **Health Check**: `http://localhost:8000/health`
+---
 
-## 📚 API Endpoints
+## 🌐 **Production Deployment**
 
-### Core Endpoints
+### **Google Cloud Run Configuration**
+- **Runtime**: Python 3.12 (Docker-based)
+- **Architecture**: Linux x86_64 (automatically handled by Cloud Build)
+- **Region**: asia-southeast1 (Singapore)
+- **Environment Variables**: Securely managed in Cloud Run
+- **CORS**: Configured for both development and production origins
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/` | Welcome message and API info |
-| `GET` | `/health` | Health check endpoint |
-| `GET` | `/docs` | Interactive API documentation |
+### **Deployment Commands**
+```bash
+# Deploy to Cloud Run
+gcloud run deploy speaksea-backend \
+    --source . \
+    --region=asia-southeast1 \
+    --allow-unauthenticated \
+    --port=8080
 
-### Voice Processing
+# Update environment variables
+gcloud run services update speaksea-backend \
+    --region=asia-southeast1 \
+    --set-env-vars="OPENAI_API_KEY=...,SEALION_API_KEY=...,SEALION_BASE_URL=..."
+```
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/voice/speech-to-text` | Convert audio to text using Whisper |
-| `POST` | `/api/voice/text-to-speech` | Convert text to audio using OpenAI TTS |
+---
 
-### Chat & Conversation
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/chat/message` | Send chat messages to SEA-LION AI |
-
-## 🏗️ Project Structure
-
+## 📋 **Project Structure**
 ```
 backend/
 ├── main.py                 # FastAPI application entry point
 ├── requirements.txt        # Python dependencies
+├── Dockerfile             # Simplified Docker configuration
+├── .dockerignore          # Docker build exclusions
 ├── env_example.txt        # Environment variables template
-├── .env                   # Your environment variables (create this)
+├── .env                   # Your local environment variables (ignored by git)
 │
 ├── models/                # Data models and schemas
 │   ├── __init__.py
@@ -127,103 +129,77 @@ backend/
 └── services/             # Business logic and external API integration
     ├── __init__.py
     ├── chat_service.py   # SEA-LION AI integration
-    └── speech_service.py # OpenAI Whisper & TTS integration
+    └── speech_service.py # OpenAI Whisper integration
 ```
-
-## 🧪 Testing the API
-
-### Using the Interactive Docs
-
-1. Go to `http://localhost:8000/docs`
-2. Click "Try it out" on any endpoint
-3. Fill in the required parameters
-4. Click "Execute" to test
-
-### Using curl
-
-```bash
-# Health check
-curl http://localhost:8000/health
-
-# Example speech-to-text (base64 encoded audio)
-curl -X POST "http://localhost:8000/api/voice/speech-to-text" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "audio_data": "base64_encoded_audio_here",
-       "language": "en"
-     }'
-```
-
-## ☁️ Cloud Run Deployment
-
-The backend is optimized for Google Cloud Run deployment. After testing locally, you can create a clean Dockerfile and deploy to GCP Cloud Run.
-
-## 🛠️ Development
-
-### Adding New Dependencies
-
-```bash
-# Install new package
-pip install package-name
-
-# Update requirements.txt
-pip freeze > requirements.txt
-```
-
-### Code Structure Guidelines
-
-- **Models**: Define Pydantic schemas in `models/schemas.py`
-- **Routes**: Add new endpoints in appropriate router files
-- **Services**: Implement business logic in service files
-- **Environment**: Add new config variables to `env_example.txt`
-
-### Common Issues & Solutions
-
-**🔧 Port already in use:**
-```bash
-# Change port in main.py or use:
-uvicorn main:app --port 8001
-```
-
-**🔧 Module not found errors:**
-```bash
-# Make sure you're in the backend directory and venv is activated
-pwd  # Should show: .../SpeakSEA/backend
-source venv/bin/activate
-```
-
-**🔧 API key errors:**
-```bash
-# Check your .env file and ensure API keys are correctly set
-cat .env  # Verify your environment variables
-```
-
-## 🔗 Integration with Frontend
-
-The API is configured to work with the Next.js frontend. CORS supports both local development (`http://localhost:3000`) and production origins via the `ALLOWED_ORIGINS` environment variable.
-
-For production deployment, set the `ALLOWED_ORIGINS` environment variable:
-```bash
-ALLOWED_ORIGINS=https://your-frontend-domain.com,https://another-domain.com
-```
-
-## 📄 License
-
-This project is part of the SpeakSEA educational platform.
-
-## 🤝 Contributing
-
-1. Create feature branches from `main`
-2. Follow existing code structure and naming conventions
-3. Test your changes thoroughly
-4. Update documentation as needed
 
 ---
 
-### 🆘 Need Help?
+## 🔧 **Key Features**
 
-- **API Documentation**: `http://localhost:8000/docs`
-- **Check Issues**: Look at the repository issues for common problems
-- **Environment Issues**: Ensure all required environment variables are set
+### **Speech Processing**
+- **OpenAI Whisper API**: High-accuracy speech-to-text transcription
+- **Audio Format Support**: Base64 encoded audio from frontend
+- **Error Handling**: Comprehensive error handling and validation
 
-**Happy coding! 🚀**
+### **AI Conversation**
+- **SEA-LION Integration**: Singapore-developed AI model for educational contexts
+- **Conversation History**: Maintains context across multiple interactions  
+- **Educational Focus**: Tailored for PSLE oral examination practice
+
+### **Production Ready**
+- **Health Checks**: Built-in health monitoring
+- **CORS Configuration**: Secure cross-origin resource sharing
+- **Environment Management**: Separate dev/prod configurations
+- **Logging**: Comprehensive request/response logging
+
+---
+
+## 🚨 **Recent Fixes & Known Issues**
+
+### **✅ Fixed Issues**
+1. **M1 MacBook Compatibility**: Initially suspected architecture issue, resolved by using Cloud Build
+2. **Python 3.13 Compatibility**: Switched to Python 3.12 due to Pydantic incompatibility
+3. **Environment Variables**: Fixed 500 errors by properly setting API keys in Cloud Run
+4. **CORS Configuration**: Updated for both development and production usage
+
+### **🔍 Monitoring**
+```bash
+# Check deployment logs
+gcloud run services logs read speaksea-backend --region=asia-southeast1 --limit=20
+
+# Monitor service health
+curl https://speaksea-backend-419410473094.asia-southeast1.run.app/health
+```
+
+---
+
+## 🤝 **API Integration**
+
+### **Frontend Integration**
+The API is designed to work seamlessly with the Next.js frontend:
+- **Development**: `http://localhost:8000` 
+- **Production**: `https://speaksea-backend-419410473094.asia-southeast1.run.app`
+
+### **CORS Policy**
+```python
+# Allowed origins
+allowed_origins = [
+    "http://localhost:3000",   # Next.js dev server
+    "https://localhost:3000",  # Next.js dev server with HTTPS
+    # Production origins added via ALLOWED_ORIGINS env var
+]
+```
+
+---
+
+## 📚 **Additional Resources**
+
+- **OpenAPI Documentation**: Available at `/docs` endpoint
+- **Health Monitoring**: Available at `/health` endpoint  
+- **Google Cloud Console**: Monitor deployment metrics and logs
+- **FastAPI Docs**: https://fastapi.tiangolo.com/
+- **Cloud Run Docs**: https://cloud.google.com/run/docs
+
+---
+
+**Status**: ✅ **Production Ready** | **Region**: 🇸🇬 Singapore | **Updated**: January 2025
