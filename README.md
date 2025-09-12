@@ -118,7 +118,7 @@ npm run dev
 | Service | Status | URL | Region |
 |---------|--------|-----|---------|
 | **Backend API** | ✅ **LIVE** | https://speaksea-backend-419410473094.asia-southeast1.run.app | Singapore |
-| **Frontend** | 🟡 **Dev Mode** | http://localhost:3001 | Local |
+| **Frontend** | ✅ **LIVE** | https://speaksea.vercel.app | Vercel |
 | **Health Check** | ✅ **Healthy** | [/health](https://speaksea-backend-419410473094.asia-southeast1.run.app/health) | - |
 | **API Docs** | ✅ **Available** | [/docs](https://speaksea-backend-419410473094.asia-southeast1.run.app/docs) | - |
 
@@ -215,6 +215,7 @@ SpeakSEA/
 2. **🐍 Python Version Compatibility**: Discovered Pydantic 2.5.0 incompatibility with Python 3.13, fixed by using Python 3.12
 3. **🔐 Environment Variables**: Resolved 500 errors by properly configuring API keys in Cloud Run
 4. **🌐 CORS Configuration**: Set up cross-origin requests for both development and production
+5. **🚫 Production CORS Issues**: Fixed CORS errors when frontend deployed on speaksea.vercel.app by adding production URL to allowed origins
 
 ### **Technical Learning Outcomes**
 - **Cloud Deployment**: Hands-on experience with Google Cloud Run
@@ -273,6 +274,27 @@ gcloud run services logs read speaksea-backend --region=asia-southeast1 --limit=
 - **Next.js Analytics**: Frontend performance tracking
 - **API Response Times**: Monitor speech processing latency
 - **Error Rates**: Track and alert on application errors
+
+### **Troubleshooting CORS Issues**
+If you encounter CORS errors when deploying to a new domain:
+
+1. **Add the domain to allowed origins in `backend/main.py`**:
+   ```python
+   allowed_origins = [
+       "http://localhost:3000",
+       "https://localhost:3000", 
+       "https://speaksea.vercel.app",
+       "https://your-new-domain.com",  # Add new domains here
+   ]
+   ```
+
+2. **Alternatively, use environment variables**:
+   ```bash
+   # Set in your deployment environment
+   ALLOWED_ORIGINS=https://speaksea.vercel.app,https://your-new-domain.com
+   ```
+
+3. **Redeploy the backend** to Google Cloud Run after making changes
 
 ---
 

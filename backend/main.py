@@ -19,9 +19,10 @@ app = FastAPI(
 allowed_origins = [
     "http://localhost:3000",  # Next.js dev server
     "https://localhost:3000",  # Next.js dev server with HTTPS
+    "https://speaksea.vercel.app",  # Production frontend
 ]
 
-# Add production origins from environment variable if available
+# Add additional production origins from environment variable if available
 production_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 if production_origins and production_origins[0]:  # Check if not empty string
     allowed_origins.extend([origin.strip() for origin in production_origins])
