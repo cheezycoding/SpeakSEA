@@ -1,6 +1,6 @@
 # 🗣️ SpeakSEA - AI-Powered PSLE Oral Practice Platform
 
-An intelligent voice-enabled web application designed to help students practice for Singapore's PSLE Oral Examinations through interactive AI conversations powered by LiveKit Agents.
+An intelligent voice-enabled web application designed to help students practice for Singapore's PSLE Oral Examinations through interactive AI conversations powered by SeaLion.
 
 ![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen)
 ![Architecture](https://img.shields.io/badge/Architecture-LiveKit%20Agents-blue)
@@ -10,9 +10,9 @@ An intelligent voice-enabled web application designed to help students practice 
 
 ## 🎯 **Project Overview**
 
-SpeakSEA combines modern web technologies with LiveKit Agents to create an immersive real-time voice learning experience:
+SpeakSEA combines modern web technologies with WebRTC Cloud Agents to create an immersive real-time voice learning experience:
 
-- **🎙️ Real-time Voice**: LiveKit-powered voice interaction with AI agents
+- **🎙️ Real-time Voice**: WebRTC-powered voice interaction with AI agents
 - **🤖 AI Conversations**: Educational feedback powered by SEA-LION AI
 - **🌏 Singapore-Focused**: Tailored for local PSLE examination requirements
 - **⚡ Low Latency**: Real-time communication for natural conversation flow
