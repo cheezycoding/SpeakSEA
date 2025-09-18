@@ -43,9 +43,9 @@ SpeakSEA combines modern web technologies with LiveKit Agents to create an immer
                                         ┌─────────────────────────┐
                                         │   External AI APIs      │
                                         │                         │
-                                        │  • OpenAI Whisper      │
-                                        │  • SEA-LION AI         │
-                                        │  • Cartesia TTS        │
+                                        │  • OpenAI Whisper       │
+                                        │  • SEA-LION AI          │
+                                        │  • Cartesia TTS         │
                                         └─────────────────────────┘
 ```
 
