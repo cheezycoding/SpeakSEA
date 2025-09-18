@@ -8,6 +8,11 @@ An intelligent voice-enabled web application designed to help students practice 
 
 ---
 
+<img width="1512" height="831" alt="image" src="https://github.com/user-attachments/assets/ebcfd636-9a4e-410b-a570-e6f34d4a75d6" />
+
+<img width="1512" height="831" alt="image" src="https://github.com/user-attachments/assets/c2991d77-dd36-49bd-9bf4-18c85a3c5ef9" />
+
+
 ## 🎯 **Project Overview**
 
 SpeakSEA combines modern web technologies with WebRTC Cloud Agents to create an immersive real-time voice learning experience:
