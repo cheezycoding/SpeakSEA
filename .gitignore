@@ -58,3 +58,8 @@ out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Defunct directories (kept locally but not tracked)
+backend/
+speaksea/
+livekit-sealion-agent/

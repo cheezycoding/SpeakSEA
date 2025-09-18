@@ -1,0 +1,7 @@
+[project]
+  subdomain = "speaksea-k03101gx"
+
+[agent]
+  id = "CA_i4JKDTZVkS2A"
+  entrypoint = "src.agent_production:entrypoint"
+  prewarm = "src.agent_production:prewarm"
