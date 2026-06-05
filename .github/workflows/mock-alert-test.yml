@@ -1,0 +1,23 @@
+name: "[MOCK] Disclosure Day Alert Test"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Poll shaw.sg for Disclosure Day (should FAIL = alert)
+        # Disclosure Day is currently in Advance Sales — this should fail,
+        # proving the alert mechanism works exactly as the Odyssey poller will.
+        run: python scripts/check_odyssey.py --movie "Disclosure Day"

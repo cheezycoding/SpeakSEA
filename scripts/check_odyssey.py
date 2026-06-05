@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """
-Poll shaw.sg advance sales for "Odyssey".
-Exit 0 = found, 1 = not found, 2 = request error.
+Poll shaw.sg advance sales for a movie by name.
+Exit 0 = not found (workflow passes, silence).
+Exit 1 = FOUND (workflow fails = GitHub emails you).
+
+Usage: check_odyssey.py [--movie "Movie Title"]  (default: Odyssey)
 """
 import sys
 import datetime
+import argparse
 import requests
 
 DEADLINE = datetime.date(2026, 7, 16)
 
-# Primary: revamp API (currently 503 but may come online); fallback: legacy API
 ENDPOINTS = [
     "https://snow-pwsm-revamp-api.sice.tech/get_advance_sale_movies",
     "https://snow-pwsm-legacy.sice.tech/get_advance_sale_movies",
@@ -26,7 +29,7 @@ HEADERS = {
 }
 
 
-def fetch_advance_sales() -> list[dict]:
+def fetch_advance_sales() -> list[dict] | None:
     for url in ENDPOINTS:
         try:
             r = requests.get(url, headers=HEADERS, timeout=15)
@@ -37,7 +40,12 @@ def fetch_advance_sales() -> list[dict]:
     return None
 
 
-def check_odyssey() -> bool:
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--movie", default="Odyssey", help="Movie title to search for (case-insensitive)")
+    args = parser.parse_args()
+    target = args.movie.lower()
+
     today = datetime.date.today()
     if today > DEADLINE:
         print(f"Past deadline {DEADLINE}, nothing to do.")
@@ -46,7 +54,7 @@ def check_odyssey() -> bool:
     movies = fetch_advance_sales()
     if movies is None:
         print("ERROR: all endpoints failed.", file=sys.stderr)
-        sys.exit(2)
+        sys.exit(0)  # Don't false-alert on network errors
 
     print(f"Fetched {len(movies)} advance sale movie(s):")
     for m in movies:
@@ -55,14 +63,13 @@ def check_odyssey() -> bool:
         print(f"  - {title} (releases {release})")
 
     for m in movies:
-        if "odyssey" in (m.get("primaryTitle") or "").lower():
-            print(f"\nFOUND: '{m['primaryTitle']}' is in Advance Sales!")
-            return True
+        if target in (m.get("primaryTitle") or "").lower():
+            print(f"\n*** FOUND: '{m['primaryTitle']}' is in Advance Sales! ***")
+            sys.exit(1)  # Fail the workflow → GitHub emails you
 
-    print("\nOdyssey NOT in Advance Sales yet.")
-    return False
+    print(f"\n'{args.movie}' not in Advance Sales yet. All quiet.")
+    sys.exit(0)  # Pass quietly
 
 
 if __name__ == "__main__":
-    found = check_odyssey()
-    sys.exit(0 if found else 1)
+    main()
