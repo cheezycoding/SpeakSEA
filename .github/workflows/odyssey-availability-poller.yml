@@ -1,0 +1,69 @@
+name: Odyssey Advance Sales Poller
+
+on:
+  schedule:
+    # Every 12 hours: midnight and noon UTC (8am and 8pm SGT)
+    - cron: "0 0,12 * * *"
+  workflow_dispatch: # allow manual trigger
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Auto-stop after deadline date
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.POLLER_ACTIVE != 'false' }}
+
+    steps:
+      - name: Abort if past deadline
+        run: |
+          DEADLINE="2026-07-16"
+          TODAY=$(date -u +%Y-%m-%d)
+          if [[ "$TODAY" > "$DEADLINE" ]]; then
+            echo "Past deadline $DEADLINE. Nothing to do."
+            exit 0
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install requests beautifulsoup4
+
+      - name: Check shaw.sg for Odyssey in Advance Sales
+        id: poll
+        run: |
+          set +e
+          python scripts/check_odyssey.py
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Notify via GitHub Issue if found
+        if: steps.poll.outputs.exit_code == '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['odyssey-alert'],
+            });
+            // Only open one issue — don't spam
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🎬 Odyssey is now in Shaw Advance Sales!',
+                body: `Detected at ${new Date().toISOString()} UTC.\n\nCheck https://www.shaw.sg/movie and book your tickets.`,
+                labels: ['odyssey-alert'],
+              });
+            }
+
+      - name: Log result
+        run: |
+          if [ "${{ steps.poll.outputs.exit_code }}" = "0" ]; then
+            echo "✅ Odyssey FOUND in Advance Sales."
+          else
+            echo "❌ Odyssey not found yet."
+          fi
