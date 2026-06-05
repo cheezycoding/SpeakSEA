@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-Poll shaw.sg/movie for "Odyssey" appearing in the Advance Sales section.
-Exits with code 0 (found) or 1 (not found / error).
+Poll shaw.sg advance sales for "Odyssey".
+Exit 0 = found, 1 = not found, 2 = request error.
 """
 import sys
-import json
 import datetime
-import re
 import requests
-from bs4 import BeautifulSoup
 
 DEADLINE = datetime.date(2026, 7, 16)
-SHAW_URL = "https://www.shaw.sg/movie"
+
+# Primary: revamp API (currently 503 but may come online); fallback: legacy API
+ENDPOINTS = [
+    "https://snow-pwsm-revamp-api.sice.tech/get_advance_sale_movies",
+    "https://snow-pwsm-legacy.sice.tech/get_advance_sale_movies",
+]
 
 HEADERS = {
     "User-Agent": (
@@ -19,78 +21,46 @@ HEADERS = {
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/124.0.0.0 Safari/537.36"
     ),
-    "Accept-Language": "en-SG,en;q=0.9",
-    "Accept": "text/html,application/xhtml+xml,application/xhtml;q=0.9,*/*;q=0.8",
+    "Origin": "https://www.shaw.sg",
+    "Referer": "https://www.shaw.sg/movie",
 }
+
+
+def fetch_advance_sales() -> list[dict]:
+    for url in ENDPOINTS:
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=15)
+            if r.status_code == 200:
+                return r.json()
+        except requests.RequestException:
+            continue
+    return None
 
 
 def check_odyssey() -> bool:
     today = datetime.date.today()
     if today > DEADLINE:
-        print(f"Past deadline {DEADLINE}, stopping.")
+        print(f"Past deadline {DEADLINE}, nothing to do.")
         sys.exit(0)
 
-    try:
-        resp = requests.get(SHAW_URL, headers=HEADERS, timeout=15)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Request failed: {e}", file=sys.stderr)
+    movies = fetch_advance_sales()
+    if movies is None:
+        print("ERROR: all endpoints failed.", file=sys.stderr)
         sys.exit(2)
 
-    html = resp.text
+    print(f"Fetched {len(movies)} advance sale movie(s):")
+    for m in movies:
+        title = m.get("primaryTitle", "unknown")
+        release = m.get("releaseDate", "?")[:10]
+        print(f"  - {title} (releases {release})")
 
-    # 1. Try __NEXT_DATA__ (Next.js SSR payload)
-    match = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.DOTALL)
-    if match:
-        try:
-            data = json.loads(match.group(1))
-            raw = json.dumps(data).lower()
-            if "odyssey" in raw:
-                # Check if it's specifically in advance sales context
-                if _is_in_advance_sales(data):
-                    print("FOUND: Odyssey is in Advance Sales (Next.js data).")
-                    return True
-                else:
-                    print("Odyssey found in page data but NOT in Advance Sales section.")
-                    return False
-        except json.JSONDecodeError:
-            pass
-
-    # 2. Fallback: parse HTML directly
-    soup = BeautifulSoup(html, "html.parser")
-
-    # Look for an advance-sales section by common class/id patterns
-    advance_section = (
-        soup.find(id=re.compile(r"advance.?sale", re.I))
-        or soup.find(class_=re.compile(r"advance.?sale", re.I))
-        or soup.find(attrs={"data-category": re.compile(r"advance", re.I)})
-    )
-
-    if advance_section:
-        section_text = advance_section.get_text(" ", strip=True).lower()
-        if "odyssey" in section_text:
-            print("FOUND: Odyssey is in Advance Sales section.")
+    for m in movies:
+        if "odyssey" in (m.get("primaryTitle") or "").lower():
+            print(f"\nFOUND: '{m['primaryTitle']}' is in Advance Sales!")
             return True
-        else:
-            print("Advance Sales section found but Odyssey not listed.")
-            return False
 
-    # 3. Last resort: full-page text search (noisy but catches anything)
-    page_text = soup.get_text(" ", strip=True).lower()
-    if "odyssey" in page_text:
-        print("WARNING: Odyssey found on page but could not confirm Advance Sales section.")
-        # Treat as found so we don't miss it
-        return True
-
-    print("Odyssey NOT found on shaw.sg/movie.")
+    print("\nOdyssey NOT in Advance Sales yet.")
     return False
-
-
-def _is_in_advance_sales(data: dict) -> bool:
-    """Walk Next.js props looking for Odyssey under an advance-sales key."""
-    raw = json.dumps(data).lower()
-    # If "advance" and "odyssey" co-exist anywhere in the payload, call it found.
-    return "advance" in raw and "odyssey" in raw
 
 
 if __name__ == "__main__":
